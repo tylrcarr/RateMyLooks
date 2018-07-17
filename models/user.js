@@ -9,6 +9,10 @@ module.exports = function (sql) {
 			primaryKey: true,
 			allowNull: false
 		},
+		pass: { 
+			type: Sequelize.CHAR(60).BINARY,
+			allowNull: false
+		},
 		email: {
 			type: Sequelize.STRING(18),
 			unique: true,
