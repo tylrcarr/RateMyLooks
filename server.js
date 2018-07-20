@@ -88,6 +88,7 @@ async function start() {
 		require("./routes/index.js")(server, db);
 		require("./routes/users.js")(server, db);
 		require("./routes/ratings.js")(server, db);
+		require("./routes/images.js")(server, db);
 		server.route({
 			method:'GET',
 			path:'/{param*}',
@@ -113,5 +114,5 @@ async function start() {
 	console.log('Server running at:', server.info.uri);
 };
 start();
-// for server inject in Lab tests
+
 module.exports = server;

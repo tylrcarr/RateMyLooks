@@ -27,5 +27,6 @@ module.exports = {
 	Sequelize: Sequelize,
 	sql: sql,
 	user: require("../models/user")(sql),
-	rating: require("../models/rating")(sql)
+	rating: require("../models/rating")(sql),
+	image: require("../models/image")(sql)
 };

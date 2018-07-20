@@ -4,6 +4,37 @@ module.exports = function (server, db) {
 	const Boom = require("boom");
 	const Path = require('path');
 
+	server.route({
+		method:'GET',
+		path:'/home',
+		config: {
+			auth: false,
+			plugins: { 
+				'hapi-auth-cookie': { 
+					redirectTo: false 
+				} 
+			}
+		},
+		handler: function(request,h) {
+			return h.redirect("/");
+		}
+	});
+
+	server.route({
+		method:'GET',
+		path:'/login',
+		config: {
+			auth: false,
+			plugins: { 
+				'hapi-auth-cookie': { 
+					redirectTo: false 
+				} 
+			}
+		},
+		handler: function(request,h) {
+			return h.redirect("/");
+		}
+	});
 
 	/*
 	server.route({
@@ -40,6 +71,7 @@ module.exports = function (server, db) {
 					if (res) {
 						let sid = "";
 						const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+						console.log(user.id);
 
 						for (var i = 0; i < 7; i++) {
 							sid += possible.charAt(Math.floor(Math.random() * possible.length));

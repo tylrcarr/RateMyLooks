@@ -16,6 +16,22 @@ module.exports = function (sql) {
 			referencesKey: 'id'
 		},
 		rating: {
+			type: Sequelize.FLOAT(4, 2),
+			allowNull: true,
+			validation: {
+				min: 1,
+				max: 10
+			}
+		},
+		bodyRating: {
+			type: Sequelize.FLOAT(2, 1),
+			allowNull: false,
+			validation: {
+				min: 1,
+				max: 10
+			}
+		},
+		faceRating: {
 			type: Sequelize.FLOAT(2, 1),
 			allowNull: false,
 			validation: {

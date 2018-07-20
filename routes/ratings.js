@@ -6,9 +6,10 @@ module.exports = function (server, db) {
 			console.log(req.payload);
 			// TODO update the rater when the user system is implemented
 			return db.rating.create({
-				rater: req.payload.rater,
+				rater: req.auth.credentials,
 				ratee: req.payload.ratee,
-				rating: req.payload.rating
+				bodyRating: req.payload.bodyRating,
+				faceRating: req.payload.faceRating
 			}).then(ratings => {console.log(ratings); return ratings; }).catch(function (err) { console.log(err); return err;});
 		}
 
