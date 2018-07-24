@@ -3,13 +3,27 @@ module.exports = function (server, db) {
 	const temp = require('short-unique-id');
 	const UID = new temp();
 
+	const sharp = require('sharp');
+
 	const fs = require("fs");
 
 	const Boom = require("Boom");
 
+	function generateImage (file, isOf, result) {
+		result.push(file.hapi);
+		console.log(file._data);
+		let ext = file.hapi.headers["content-type"];
+		const filename = UID.randomUUID(10) + "." + ext.substr(ext.lastIndexOf('/') + 1);
+		const dir = __dirname + "/../public/images/" + filename;
+		sharp(file._data).resize(480, 640).toFile(dir).then(info => {
+			db.image.create({ userId: isOf, img: filename });
+		}).catch(err => {console.log(err)});
+
+
+	}
 	server.route({
 		method: "POST",
-		path: "/users/{id}/photos",
+		path: "/users/photos",
 		config: {
 			payload: {
 				output: "stream",
@@ -19,21 +33,17 @@ module.exports = function (server, db) {
 			}
 		},
 		handler: function (req, h) {
-			if (req.params.id === req.auth.credentials) {
+			if (req.auth.credentials) {
 				let result = [];
-				const num = (typeof req.payload["file"].length === undefined ? 1 : req.payload["file"].length);
-				for(let i = 0; i < req.payload["file"].length; i++) {
-					result.push(req.payload["file"][i].hapi);
-					let ext = req.payload["file"][i].hapi.headers["content-type"];
-					const filename = UID.randomUUID(10) + "." + ext.substr(ext.lastIndexOf('/') + 1);
-					req.payload["file"][i].pipe(fs.createWriteStream(__dirname + "/../public/images/" + filename))
-					db.image.create({
-						userId: req.auth.credentials,
-						img: filename
-					});
+				if (req.payload.file.length !== undefined){
+					for(let i = 0; i < req.payload["file"].length; i++) {
+						generateImage(req.payload.file[i], req.auth.credentials, result);
+					}
+				} else {
+					generateImage(req.payload.file, req.auth.credentials, result);
 				}
 				return result;
-			} else { return Boom.unauthorized("Not your account!"); }
+			} else { return Boom.unauthorized("Not logged in!!"); }
 		}
 	});
 

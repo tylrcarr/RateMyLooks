@@ -6,6 +6,22 @@ module.exports = function (server, db) {
 
 	server.route({
 		method:'GET',
+		path:'/settings',
+		config: {
+			auth: false,
+			plugins: { 
+				'hapi-auth-cookie': { 
+					redirectTo: false 
+				} 
+			}
+		},
+		handler: function(request,h) {
+			return h.redirect("/");
+		}
+	});
+
+	server.route({
+		method:'GET',
 		path:'/home',
 		config: {
 			auth: false,
