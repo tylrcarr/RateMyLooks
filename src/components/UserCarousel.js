@@ -7,19 +7,16 @@ let items = {
 
 let initStyles = { 
 	"face-img" : {
+		maxWidth: "100%",
+		maxHeight: "100%",
 		height: "auto",
 		width: "auto"
 	},
 	"body-img" : {
+		maxWidth: "100%",
+		maxHeight: "100%",
 		height: "auto",
 		width: "auto"
-	},
-	//"opened-img" : "width: 100%; height: auto; max-height: 50vh; transition: width 600ms ease-out, height 600ms ease-out;",
-	"opened-img" : {
-		width: "100%", 
-		height: "auto", 
-		maxHeight: "50vh", 
-		transition: "width 600ms ease-out, height 600ms ease-out"
 	},
 	"face-default": {
 		height: "auto",
@@ -30,13 +27,14 @@ let initStyles = {
 		width: "auto"
 	},
 	"image-collection" : {
-		height: "50vh",
+		height: "100%",
 		width: "100%"
 	},
 	"img-container" : {
 		height: "50%",
+		display: "flex",
+		justifyContent: "space-evenly",
 		width: "100%"
-		
 	}
 }
 
@@ -45,7 +43,8 @@ class UserCarousel extends Component {
 	constructor (props) {
 		super(props);
 		this.state = { activeImage: null, bodyCount: null, faceCount: null, styles: initStyles}; 
-		this.toggleImage.bind(this);
+		this.closeImage = this.closeImage.bind(this);
+		this.openImage.bind(this);
 	}
 	componentDidMount() {
 		this.props.onRef(this)
@@ -56,49 +55,48 @@ class UserCarousel extends Component {
 	}
 
 	addImage (isBody, img) {
-		let newState = this.state;
-		const attrName = `${isBody ? 'body' : 'face'}Count`;
-		newState[attrName] = (this.state[attrName] !== null ? this.state[attrName] + 1 : 1);
-
-		// a bunch of magic to circumvent a memory pointer and make the specific "width" not readonly
-		let temp = {
-			height: newState.styles[`${isBody ? 'body' : 'face'}-default`].height
-		}
-		temp.width = `${100/newState[attrName]}%`;
-		
-		newState.styles[`${isBody ? 'body' : 'face'}-default`] = temp;
-		newState.styles[`${isBody ? 'body' : 'face'}-img`] = newState.styles[`${isBody ? 'body' : 'face'}-default`];
 		items[isBody ? 'bodyItems' : 'faceItems'].push({src: img});
-		console.log(newState);
-		this.setState(newState);
+		//console.log(newState);
+		this.setState(this.state);
+		//this.setState(newState);
 	}
 
-	toggleImage (e) {
-		//e.target
-		let isOpened = (e.target.getAttribute("isopened") !== "false");
-		if (isOpened) {
-			this.setState(this.state);
-		} else {
-			e.target.setAttribute("isopened", "true");
-			e.target.style = this.state.styles["opened-img"];
-		}
+	openImage (e) {
+		/*
+		this.refs.openImage.src = e.target.src;
+		this.refs.openImage.style = "height: auto; width: auto; max-height: 100%; max-width: 100%;";
+		*/
+		this.refs.openDiv.style = `display: block; position: fixed; top: 0; right: 0; width: 100%; height: 100%; z-index: 9999; text-align: center; background-color:black; background-image: url(${e.target.src}); background-size: contain; background-position: center; background-repeat: no-repeat;`
+	}
+
+	closeImage () {
+		this.refs.openImage.src = ""; 
+		this.refs.openImage.style = "";
+		this.refs.openDiv.style = "display: none;"
 	}
 
 	render() {
 		//const { activeImage } = this.state.activeImage;
 		const faceSlides = items.faceItems.map((item) => {
 			return (
-				<img className="face-img" isopened="false" style={this.state.styles["face-img"]} src={item.src} key={item.src} onClick={e => this.toggleImage(e, this)} />
+				<div className="img-container" style={{textAlign: "center"}} key={item.src}>
+					<img className="face-img" isopened="false" style={this.state.styles["face-img"]} src={item.src} key={item.src} onClick={e => this.openImage(e)} />
+				</div>
 			);
 		});
 		const bodySlides = items.bodyItems.map((item) => {
 			return (
-				<img className="body-img" isopened="false" style={this.state.styles["body-img"]} src={item.src} key={item.src} onClick={e => this.toggleImage(e, this)} />
+				<div className="img-container" key={item.src}>
+					<img className="body-img" style={this.state.styles["body-img"]} src={item.src} key={item.src} onClick={e => this.openImage(e)} />
+				</div>
 			);
 		});
 
 		return (
 			<div className="image-holder" style={this.state.styles["image-collection"]}>
+				<div className="open-div" style={{display: "none"}} ref="openDiv" onClick={this.closeImage}>
+					<img ref="openImage"  onClick={this.closeImage}/>
+				</div>
 				<div className="face-div" style={this.state.styles["img-container"]}>
 					{faceSlides}
 				</div>

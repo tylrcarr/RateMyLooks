@@ -27,8 +27,6 @@ class Home extends Component {
 		/*
 		axios.get("/users/next").then(res => {
 		*/
-			console.log(this.carousel);
-			console.log("Here");
 			const res = {
 				data: "od8v6gr7ljdqj4wfma"
 			}
@@ -59,9 +57,9 @@ class Home extends Component {
 	render() {
 
 		return (
-			<div className="container">
-				<input type="button" onClick={this.goToSettings} value="settings" />
-				<div id="carousel">
+			<div className="container" style={{maxWidth: "540px"}}>
+				<input id="settingsBtn" type="button" onClick={this.goToSettings} value="settings" />
+				<div id="carousel" style={{height: "40vh"}}>
 					<UserCarousel onRef={ref => (this.carousel = ref)} />
 				</div>
 				<div className="slideContainer">

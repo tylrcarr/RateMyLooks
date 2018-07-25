@@ -60,6 +60,12 @@ body {
 	right: calc(50% - 1em);
 }
 
+/* Page buttons */
+#settingsBtn {
+	position: fixed;
+	top: 0; 
+	left: 0;
+}
 .submit-btn {
 	height: 20vh;
 	width: 100%;

@@ -3,21 +3,22 @@ module.exports = function (server, db) {
 	const temp = require('short-unique-id');
 	const UID = new temp();
 
-	const sharp = require('sharp');
+	const sharp = require("sharp");
 
 	const fs = require("fs");
 
 	const Boom = require("Boom");
 
-	function generateImage (file, isOf, result) {
-		result.push(file.hapi);
-		console.log(file._data);
-		let ext = file.hapi.headers["content-type"];
-		const filename = UID.randomUUID(10) + "." + ext.substr(ext.lastIndexOf('/') + 1);
+	const toBuffer = require('data-uri-to-buffer');
+
+	function generateImage (file, isOf) {
+		const filename = UID.randomUUID(10) + ".png";
 		const dir = __dirname + "/../public/images/" + filename;
-		sharp(file._data).resize(480, 640).toFile(dir).then(info => {
+		console.log(dir);
+		sharp(file).resize(480, 640).toFile(dir).then(info => {
+			console.log(info);
 			db.image.create({ userId: isOf, img: filename });
-		}).catch(err => {console.log(err)});
+		}).catch(err => {console.log(err); throw err;});
 
 
 	}
@@ -35,12 +36,10 @@ module.exports = function (server, db) {
 		handler: function (req, h) {
 			if (req.auth.credentials) {
 				let result = [];
-				if (req.payload.file.length !== undefined){
-					for(let i = 0; i < req.payload["file"].length; i++) {
-						generateImage(req.payload.file[i], req.auth.credentials, result);
-					}
-				} else {
-					generateImage(req.payload.file, req.auth.credentials, result);
+				try {
+					generateImage(toBuffer(req.payload.file), req.auth.credentials);
+				} catch (err) {
+					return Boom.badRequest("Bad request, try again.");
 				}
 				return result;
 			} else { return Boom.unauthorized("Not logged in!!"); }

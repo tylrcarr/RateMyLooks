@@ -6,6 +6,9 @@ import ImageEditor from "../components/ImageEditor";
 
 import css from "./css/Settings.css";
 
+import Cropper from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
+
 class Settings extends Component {
 
 	constructor (props) {
@@ -16,14 +19,12 @@ class Settings extends Component {
 
 	sendImage () {
 		if (this.editor.state.image !== "") {
-			console.log(this.editor.editor.getCroppingRect());
-			console.log(this.editor.state.image);
 			/*
 			const form = new FormData();
 			form.append("file", this.editor.state.image[0].name);
-			form.append("cropping", this.editor.editor.getCroppingRect());
+			form.append("cropping", );
 			*/
-			axios.post("/users/photos", this.editor.state.form).then(res => {console.log(res)}).catch(err => {console.log(err)});
+			axios.post("/users/photos", this.editor.getForm()).then(res => {console.log(res)}).catch(err => {console.log(err)});
 		}
 	}
 	
@@ -31,7 +32,7 @@ class Settings extends Component {
 	render() {
 
 		return (
-			<div className="container">
+			<div>
 				<ImageEditor onRef={ref => (this.editor = ref)} />
 				<input type="button" value="submit" onClick={this.sendImage} />
 			</div>
